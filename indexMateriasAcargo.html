@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/materias.css">
+    <title>Materias a Cargo - Profesores</title>
+</head>
+
+<body>
+    <div id="sidemenu" class="menu-expanded">
+        <div id="header">
+            <div id="title"><span>PROFESORES</span></div>
+            <div id="menu-btn">
+                <div class="bn-hamburguer"></div>
+                <div class="bn-hamburguer"></div>
+                <div class="bn-hamburguer"></div>
+            </div>
+        </div>
+
+        <div id="profile">
+            <div id="photo">
+                <img src="https://static1.educaedu-colombia.com/adjuntos/12/00/35/cecep---fundaci-n-centro-colombiano-de-estudios-profesionales-003504_large.jpg"
+                    width="200px" height="200px" alt="">
+            </div>
+            <div id="name"><span>CECEP</span></div>
+        </div>
+
+        <div id="menu-items">
+            <div class="item">
+                <a href="/index.html">
+                    <div class="icon"><img src="#" alt=""></div>
+                    <div class="title"><span>INGRESO DE NOTAS</span></div>
+                </a>
+            </div>
+
+            <div class="item separador"></div>
+            <div class="item">
+                <a href="indexMateriasAcargo.html">
+                    <div class="icon"><img src="#" alt=""></div>
+                    <div class="title"><span>MATERIAS A CARGO</span></div>
+                </a>
+            </div>
+            <div class="item">
+                <a href="/consul.html">
+                    <div class="icon"><img src="#" alt=""></div>
+                    <div class="title"><span>CONSULTA DE NOTAS</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="container">
+            <div class="content">
+                <!-- Aquí comienza la sección para mostrar los profesores -->
+                <div class="content-container">
+                    <div class="professor-card">
+                        <img src="/uploads/mte.png"  alt="Foto del Profesor" class="professor-photo">
+                        <div class="professor-info">
+                            <h2 class="professor-name">Juan Pérez</h2>
+                            <p class="professor-description">Soy un docente de literatura española, y Matemática pura</p>
+                        </div>
+                    </div>
+                    <div class="professor-card">
+                        <img src="/uploads/poli.png" alt="Foto del Profesor" class="professor-photo">
+                        <div class="professor-info">
+                            <h2 class="professor-name">Carlos López</h2>
+                            <p class="professor-description">Soy un linceciado en ciencias politícas, con una especialización en geografía.</p>
+                        </div>
+                    </div>
+                    <!-- Puedes agregar más tarjetas según lo necesites -->
+                </div>
+
+                <!-- Este es el resto de tu código para mostrar los profesores disponibles y las materias -->
+                <div class="card bg-dark text-white text-center">
+                    <h3>Seleccione un Profesor</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Profesores Disponibles</h5>
+                    </div>
+                    <div class="card-body">
+                        <select id="profesorSelect" onchange="mostrarMaterias()">
+                            <option value="">Selecciona un profesor</option>
+                            <script>
+                                async function cargarProfesores() {
+                                    try {
+                                        const response = await fetch("http://localhost:3000/api/profesores");
+
+                                        if (response.ok) {
+                                            const profesores = await response.json();
+                                            const select = document.getElementById("profesorSelect");
+
+                                            profesores.forEach(profesor => {
+                                                const option = document.createElement("option");
+                                                option.value = profesor.UsuarioID;
+                                                option.textContent = `${profesor.Nombre} ${profesor.Apellido}`;
+                                                select.appendChild(option);
+                                            });
+                                        } else {
+                                            console.error("Error al cargar los profesores");
+                                        }
+                                    } catch (error) {
+                                        console.error("Error en la conexión:", error);
+                                    }
+                                }
+
+                                cargarProfesores();
+                            </script>
+                        </select>
+
+                        <div id="materiasCardContainer" style="display:none;">
+                            <ul id="materiasList" class="list-group"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3" id="materiasCard" style="display: none;">
+                    <div class="card-header">
+                        <h5>Materias a Cargo del Profesor Seleccionado</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group" id="materiasList">
+                            <script>
+                                async function mostrarMaterias() {
+                                    const profesorID = document.getElementById("profesorSelect").value;
+                                    const materiasCard = document.getElementById("materiasCardContainer");
+                                    const materiasList = document.getElementById("materiasList");
+
+                                    materiasList.innerHTML = "";
+
+                                    if (profesorID === "") {
+                                        materiasCard.style.display = "none";
+                                        return;
+                                    }
+
+                                    try {
+                                        const response = await fetch(`http://localhost:3000/api/profesores/${profesorID}/materias`);
+
+                                        if (response.ok) {
+                                            const materias = await response.json();
+
+                                            if (materias.length > 0) {
+                                                materiasCard.style.display = "block";
+                                                materias.forEach(materia => {
+                                                    const li = document.createElement("li");
+                                                    li.className = "list-group-item";
+                                                    li.textContent = materia.NombreMateria;
+                                                    materiasList.appendChild(li);
+                                                });
+                                            } else {
+                                                materiasCard.style.display = "none";
+                                            }
+                                        } else {
+                                            console.error("Error al cargar las materias");
+                                        }
+                                    } catch (error) {
+                                        console.error("Error en la conexión:", error);
+                                    }
+                                }
+                            </script>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="github-icon-container">
+        <a href="https://github.com/usuario">
+            <i class="fab fa-github github-icon"></i>
+        </a>
+    </div>
+</body>
+
+</html>

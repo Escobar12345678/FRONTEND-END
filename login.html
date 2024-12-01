@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="/CSS/login.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <div class="Login">
+            <h2 class="titulo">BIENVENIDO</h2>
+            <div class="form-container">
+                <img src="https://th.bing.com/th/id/OIP.ObFeTTH7HlV3mGBt76zpnAHaHa?rs=1&pid=ImgDetMain" alt="logo-tech" class="logo-tech"/>
+                <form id="login-form" action="http://localhost:3000/login" method="POST" class="form">
+                    <label for="UsuarioID">Usuario</label>
+                    <input type="text" name="UsuarioID" id="UsuarioID" placeholder="Usuario" required>
+                    <label for="Contraseña">Contraseña</label>
+                    <input type="password" name="Contraseña" id="Contraseña" placeholder="Contraseña" required>
+                    <button class="primary-button" type="submit">INICIAR SESIÓN</button>
+                </form>
+            </div>
+        </div>
+        <div class="texto-par">
+            <p>Para ingresar al modulo de consultas debes digitar tu código estudiantil, <br>
+            el cual se encuentra en la liquidación financiera y el documento de identidad. </p>
+            <p>En caso de presentar alguna dificultad envíanos un correo a<a href="#">soporte@fundacioncecep.edu.co</a></p>
+        </div>
+    </center>
+
+    <script>
+        const form = document.getElementById('login-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+    
+            // Obtener los valores del formulario
+            const UsuarioID = document.getElementById('UsuarioID').value;
+            const Contraseña = document.getElementById('Contraseña').value;
+    
+            // Realizar la solicitud POST al backend
+            const response = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ UsuarioID, Contraseña }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                // Si la respuesta es exitosa, redirige a la página de interfaz
+                window.location.href = data.redirectUrl; // Redirige usando la URL proporcionada por el servidor
+            } else {
+                // Si la respuesta no es exitosa, muestra un mensaje de error
+                alert(data.message || 'Error en el login');
+            }
+        });
+    </script>
+    
+
+
+</body>
+</html>
